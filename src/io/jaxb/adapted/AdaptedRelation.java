@@ -32,6 +32,7 @@ public class AdaptedRelation {
 		this.name = name;
 	}
 
+	// Note: getAttributes returns an AdapatedAttribute[], not an Attribute[].
 	@XmlElements({ @XmlElement(name = "attribute", type = AdaptedAttribute.class) })
 	public AdaptedAttribute[] getAttributes() {
 		return Arrays.stream(this.attributes)
@@ -39,11 +40,12 @@ public class AdaptedRelation {
 				.toArray(AdaptedAttribute[]::new);
 	}
 	
+	// Note: the type of the argument to setAttributes must match that of the 
+	// return value from getAttributes (else deserialisation will not work).  
 	public void setAttributes(AdaptedAttribute[] attributes) {
 		this.attributes = Arrays.stream(attributes)
 				.map(attr -> attr.toAttribute())
 				.toArray(Attribute[]::new);
-//		this.attributes = attributes;
 	}
 
 	public Relation toRelation() {

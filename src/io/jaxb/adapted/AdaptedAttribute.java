@@ -19,7 +19,11 @@ public class AdaptedAttribute {
 	
 	private Type type;
 	private String name;
-	
+
+	// Note: we cannot annotate this method with @XmlAttribute, since Type is
+	// an interface (and JAXB can't handle interfaces). Instead we have a 
+	// getTypeName method returning a String, and the corresponding setter
+	// takes a String but sets the Type field. 
 	public Type getType() {
 		return this.type;
 	}
