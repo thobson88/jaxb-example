@@ -20,6 +20,8 @@ public class AdaptedAccessMethod extends AbstractAdaptedAccessMethod {
 	}
 
 	// Note: getRelation returns an AdapatedAbridgedRelation, not a Relation.
+	// We use the abridged option since the relation is being serialised 
+	// indirectly, i.e. as part of an access method. 
 	@XmlElement(name = "relation")
 	public AdaptedAbridgedRelation getRelation() {
 		return new AdaptedAbridgedRelation(this.relation);

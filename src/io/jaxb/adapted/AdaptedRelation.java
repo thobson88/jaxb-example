@@ -13,11 +13,11 @@ import db.Relation;
 @XmlRootElement(name="relation")
 public class AdaptedRelation extends AbstractAdaptedRelation {
 
-	// Note that the accessMethods member is *adapted* (and abridged) since it is convenient
-	// to instantiate AccessMethod objects only when necessary, i.e. when toRelation is called, 
-	// because the AccessMethod constructor requires a Relation instance argument.
+	// Note that, unlike the other field, the accessMethods member is *adapted* 
+	// (and abridged). It is convenient to convert to AccessMethod objects only 
+	// when necessary, i.e. when toRelation is called, because the AccessMethod 
+	// constructor requires a Relation instance argument.
 	protected List<AdaptedAbridgedAccessMethod> accessMethods = new ArrayList<AdaptedAbridgedAccessMethod>();
-	Relation relation;
 	
 	public AdaptedRelation() { }
 	
@@ -29,7 +29,9 @@ public class AdaptedRelation extends AbstractAdaptedRelation {
 				.collect(Collectors.toList());
 	}
 
-	// Note: getAccessMethods returns a List<AdapatedAbridgedAccessMethod>, not a List<AccessMethod>.
+	// Note: getAccessMethods returns a List<AdapatedAbridgedAccessMethod>, 
+	// not a List<AccessMethod>. We use the abridged option since each access 
+	// method is being serialised indirectly, i.e. as part of a relation. 
 	@XmlElements({ @XmlElement(name = "accessMethod", type = AdaptedAbridgedAccessMethod.class) })
 	public List<AdaptedAbridgedAccessMethod> getAccessMethods() {
 		return this.accessMethods;
@@ -45,6 +47,9 @@ public class AdaptedRelation extends AbstractAdaptedRelation {
 	// Override toRelation to include any access methods.
 	@Override
 	public Relation toRelation() {
+		// First construct a relation without any access methods, then use
+		// that object to convert the *abridged* adapted the access methods
+		// into AccessMethod instances, then add them to the relation and return.
 		Relation relation = super.toRelation();
 		for (AdaptedAbridgedAccessMethod am : this.accessMethods)
 			relation.addAccessMethod(am.toAccessMethod(relation));
