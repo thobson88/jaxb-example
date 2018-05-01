@@ -27,6 +27,9 @@ public class Relation {
 	}
 	
 	public void addAccessMethod(AccessMethod accessMethod) {
+		
+		if (!accessMethod.getRelation().equals(this))
+			throw new IllegalArgumentException();
 		this.accessMethods.add(accessMethod);
 	}
 }

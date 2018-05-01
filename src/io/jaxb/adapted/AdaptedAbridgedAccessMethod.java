@@ -20,7 +20,8 @@ public class AdaptedAbridgedAccessMethod extends AbstractAdaptedAccessMethod {
 	AccessMethod toAccessMethod(Relation relation) {
 		
 		AccessMethod ret = new AccessMethod(this.name, this.attributes, relation);
-		relation.addAccessMethod(ret);
+		// Note that we do *not* add the access method to the given relation (else
+		// we would have double-adding in the AdaptedRelation's toRelation method).
 		return ret;
 	}
 }
