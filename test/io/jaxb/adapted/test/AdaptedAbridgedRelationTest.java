@@ -15,25 +15,25 @@ import org.junit.Test;
 import db.AccessMethod;
 import db.Attribute;
 import db.Relation;
-import io.jaxb.adapted.AdaptedRelation;
+import io.jaxb.adapted.AdaptedAbridgedRelation;
 
-public class AdaptedRelationTest {
+public class AdaptedAbridgedRelationTest {
 
 	@Test
 	public void testMarshall() {
-
+		
 		Relation relation = new Relation("relation", 
 				new Attribute[] { new Attribute(String.class, "a"), new Attribute(Integer.class, "b") });
 		AccessMethod am = new AccessMethod("accessMethod", 
 				new Attribute[] { new Attribute(Integer.class, "b") }, relation);
 		relation.addAccessMethod(am);
 		
-		AdaptedRelation target = new AdaptedRelation(relation);
+		AdaptedAbridgedRelation target = new AdaptedAbridgedRelation(relation);
 		
 		Writer writer = new StringWriter();
 
 		try {
-			JAXBContext context = JAXBContext.newInstance(AdaptedRelation.class);
+			JAXBContext context = JAXBContext.newInstance(AdaptedAbridgedRelation.class);
 			Marshaller m = context.createMarshaller();
 
 			// output pretty printed
@@ -51,9 +51,6 @@ public class AdaptedRelationTest {
 						"<relation name=\"relation\">\n" +
 						"    <attribute name=\"a\" type=\"java.lang.String\"/>\n" +
 						"    <attribute name=\"b\" type=\"java.lang.Integer\"/>\n" +
-						"    <accessMethod name=\"accessMethod\">\n" + 
-						"        <attribute name=\"b\" type=\"java.lang.Integer\"/>\n" +
-						"    </accessMethod>\n" +
 						"</relation>\n";
 
 		Assert.assertEquals(expected, actual);
@@ -68,15 +65,18 @@ public class AdaptedRelationTest {
 				new Attribute[] { new Attribute(Integer.class, "b") }, relation);
 		relation.addAccessMethod(am);
 		
-		AdaptedRelation target = new AdaptedRelation(relation);
-
-		Assert.assertFalse(target.toRelation().getAccessMethods().isEmpty());
+		AdaptedAbridgedRelation target = new AdaptedAbridgedRelation(relation);
 		
+		// The Relation has an associated AccessMethod, but the adapted, *abridged*
+		// object does not (since access methods are omitted in the abridged serialisation).
+		Assert.assertFalse(relation.getAccessMethods().isEmpty());
+		Assert.assertTrue(target.toRelation().getAccessMethods().isEmpty());
+
 		Writer writer = new StringWriter();
 
-		AdaptedRelation unmarshalled = null;
+		AdaptedAbridgedRelation unmarshalled = null;
 		try {
-			JAXBContext context = JAXBContext.newInstance(AdaptedRelation.class);
+			JAXBContext context = JAXBContext.newInstance(AdaptedAbridgedRelation.class);
 			Marshaller m = context.createMarshaller();
 			Unmarshaller u = context.createUnmarshaller();
 
@@ -85,7 +85,7 @@ public class AdaptedRelationTest {
 
 			m.marshal(target, writer);
 			String str = writer.toString();
-			unmarshalled = (AdaptedRelation) u.unmarshal(new StringReader(str));
+			unmarshalled = (AdaptedAbridgedRelation) u.unmarshal(new StringReader(str));
 
 		} catch (JAXBException e) {
 			e.printStackTrace();
@@ -93,22 +93,18 @@ public class AdaptedRelationTest {
 
 		Assert.assertEquals("relation", unmarshalled.getName());
 
+		// Here we can call toRelation on the *abridged* adapted object (i.e. unmarshalled)
+		// because a Relation may be instantiated without an AccessMethod (this is in 
+		// contrast to the case of an unmarshalled abridged access method). However, the 
+		// resulting Relation will have "lost" it's access method(s), of course. 
+		
 		// Call toRelation() and then getAttributes(), since getAttributes 
-		// on the unmarshalled AdaptedRelation returns an AdaptedAttribute[],
+		// on the unmarshalled AdaptedAbridgedRelation returns an AdaptedAttribute[],
 		// not an Attribute[].
 		Assert.assertArrayEquals(attributes, unmarshalled.toRelation().getAttributes());
 		
-		// The unmarshalled Relation has a reference to the associated AccessMethod,
-		// because serialisation was *unabridged*.
-		Assert.assertFalse(unmarshalled.toRelation().getAccessMethods().isEmpty());
-		Assert.assertEquals("accessMethod", unmarshalled.toRelation().getAccessMethods().get(0).getName());
-		Assert.assertArrayEquals(new Attribute[] { new Attribute(Integer.class, "b") }, 
-				unmarshalled.toRelation().getAccessMethods().get(0).getAttributes());
-		
-		// Check the circular reference from the access method back to the relation.
-		Relation deserialisedRelation = unmarshalled.toRelation(); 
-		Assert.assertEquals(deserialisedRelation, deserialisedRelation.getAccessMethods().get(0).getRelation());
+		// The unmarshalled Relation no longer has an associated AccessMethod, 
+		// because serialisation was *abridged*. 
+		Assert.assertTrue(unmarshalled.toRelation().getAccessMethods().isEmpty());
 	}
-	
-	// MOST IMP TODO: test with multiple AccessMethods associated before serialisation.
 }

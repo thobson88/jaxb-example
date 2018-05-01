@@ -68,7 +68,6 @@ public class AdaptedAttributeTest {
 		}
 		
 		Assert.assertEquals("a", unmarshalled.getName());
-//		Assert.assertEquals("java.lang.String", unmarshalled.getTypeName());
 		Assert.assertEquals(String.class, unmarshalled.getType());
 	}
 
