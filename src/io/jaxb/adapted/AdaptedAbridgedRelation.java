@@ -10,7 +10,6 @@ public class AdaptedAbridgedRelation extends AbstractAdaptedRelation {
 	public AdaptedAbridgedRelation() { }
 
 	public AdaptedAbridgedRelation(Relation relation) {
-		this.name = relation.getName();
-		this.attributes = relation.getAttributes();
+		super(relation);
 	}
 }

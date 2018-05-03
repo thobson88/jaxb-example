@@ -1,3 +1,4 @@
+
 package io.jaxb.adapted;
 
 import java.util.Arrays;

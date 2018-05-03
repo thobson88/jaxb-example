@@ -22,8 +22,7 @@ public class AdaptedRelation extends AbstractAdaptedRelation {
 	public AdaptedRelation() { }
 	
 	public AdaptedRelation(Relation relation) {
-		this.name = relation.getName();
-		this.attributes = relation.getAttributes();
+		super(relation);
 		this.accessMethods = relation.getAccessMethods().stream()
 				.map(am -> new AdaptedAbridgedAccessMethod(am))
 				.collect(Collectors.toList());

@@ -10,7 +10,9 @@ import db.Relation;
 public class AdaptedAccessMethod extends AbstractAdaptedAccessMethod {
 
 	protected Relation relation;
-	protected AccessMethod accessMethod;
+	
+	// Helper field for the toAccessMethod method.
+	private AccessMethod accessMethod;
 
 	public AdaptedAccessMethod() { }
 
