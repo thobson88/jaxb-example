@@ -9,6 +9,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.json.JSONObject;
+import org.json.XML;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,9 +29,9 @@ public class AdaptedAccessMethodTest {
 		AccessMethod am = new AccessMethod("accessMethod", 
 				new Attribute[] { new Attribute(Integer.class, "b") }, relation);
 		relation.addAccessMethod(am);
-		
+
 		AdaptedAccessMethod target = new AdaptedAccessMethod(am);
-		
+
 		Writer writer = new StringWriter();
 
 		try {
@@ -61,6 +63,61 @@ public class AdaptedAccessMethodTest {
 	}
 
 	@Test
+	public void testMarshallToJson() {
+
+		Relation relation = new Relation("relation", 
+				new Attribute[] { new Attribute(String.class, "a"), new Attribute(Integer.class, "b") });
+		AccessMethod am = new AccessMethod("accessMethod", 
+				new Attribute[] { new Attribute(Integer.class, "b") }, relation);
+		relation.addAccessMethod(am);
+
+		AdaptedAccessMethod target = new AdaptedAccessMethod(am);
+
+		Writer writer = new StringWriter();
+
+		try {
+			JAXBContext context = JAXBContext.newInstance(AdaptedAccessMethod.class);
+			Marshaller m = context.createMarshaller();
+
+			// output pretty printed
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+			m.marshal(target, writer);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+
+		// To JSON.
+		int PRETTY_PRINT_INDENT_FACTOR = 4;
+		JSONObject xmlJSONObj = XML.toJSONObject(writer.toString());
+
+		String actual = xmlJSONObj.toString(PRETTY_PRINT_INDENT_FACTOR);
+		String expected = 	
+				"{\"accessMethod\": {\n" +
+				"    \"name\": \"accessMethod\",\n" +
+				"    \"attribute\": {\n" +
+				"        \"name\": \"b\",\n" +
+				"        \"type\": \"java.lang.Integer\"\n" +
+				"    },\n" +
+				"    \"relation\": {\n" +
+				"        \"name\": \"relation\",\n" +
+				"        \"attribute\": [\n" +
+				"            {\n" +
+				"                \"name\": \"a\",\n" +
+				"                \"type\": \"java.lang.String\"\n" +
+				"            },\n" +
+				"            {\n" +
+				"                \"name\": \"b\",\n" +
+				"                \"type\": \"java.lang.Integer\"\n" + 
+				"            }\n" +
+				"        ]\n" +
+				"    }\n" +
+				"}}";
+
+		Assert.assertEquals(expected, actual);
+	}
+
+	@Test
 	public void testRoundTrip() {
 
 		Relation relation = new Relation("relation", 
@@ -68,9 +125,9 @@ public class AdaptedAccessMethodTest {
 		AccessMethod am = new AccessMethod("accessMethod", 
 				new Attribute[] { new Attribute(Integer.class, "b") }, relation);
 		relation.addAccessMethod(am);
-		
+
 		AdaptedAccessMethod target = new AdaptedAccessMethod(am);
-		
+
 		Writer writer = new StringWriter();
 
 		AdaptedAccessMethod unmarshalled = null;
@@ -93,10 +150,10 @@ public class AdaptedAccessMethodTest {
 		Assert.assertEquals("accessMethod", unmarshalled.getName());
 
 		// In contrast to the *abridged* case, here we *can* call toAccessMethod.
-		
+
 		Assert.assertEquals(am.getName(), unmarshalled.toAccessMethod().getName());
 		Assert.assertArrayEquals(am.getAttributes(), unmarshalled.toAccessMethod().getAttributes());
-		
+
 		// Check that the Relation is associated with the unserialised AccessMethod.
 		Assert.assertEquals(relation.getName(), unmarshalled.toAccessMethod().getRelation().getName());
 		Assert.assertArrayEquals(relation.getAttributes(), unmarshalled.toAccessMethod().getRelation().getAttributes());
