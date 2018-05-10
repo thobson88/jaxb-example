@@ -1,14 +1,15 @@
 package db;
 
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * A database schema.
+ */
 public class Schema {
 
 	private Relation[] relations;
-	private Map<Key, Key> dependencies = new HashMap<Key, Key>();
+	private Dependency[] dependencies;
+	// old: private Map<Key, Key> dependencies = new HashMap<Key, Key>();
 	
-	public Schema(Relation[] relations, Map<Key, Key> dependencies) {
+	public Schema(Relation[] relations, Dependency[] dependencies) {
 		this.relations = relations;
 		// TODO: check that: 
 		// - all relations in the dependencies are in the given relations array
@@ -19,10 +20,10 @@ public class Schema {
 	}
 
 	public Relation[] getRelations() {
-		return relations;
+		return this.relations;
 	}
 
-	public Map<Key, Key> getDependencies() {
-		return dependencies;
+	public Dependency[] getDependencies() {
+		return this.dependencies;
 	}
 }

@@ -1,5 +1,8 @@
 package db;
 
+/**
+ * A database access method.
+ */
 public class AccessMethod {
 
 	private String name;

@@ -2,6 +2,9 @@ package db;
 
 import java.lang.reflect.Type;
 
+/**
+ * An attribute in a database relation.
+ */
 public class Attribute {
 
 	public String getName() {

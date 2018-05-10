@@ -3,6 +3,9 @@ package db;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A database relation.
+ */
 public class Relation {
 
 	private String name;

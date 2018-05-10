@@ -1,27 +1,35 @@
 package db;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Key {
 
 	private final Relation relation;
-	private final Attribute attribute;
+	// old: private final Attribute attribute;
+	private final Attribute[] attributes;
 
-	public Key(Relation relation, Attribute attribute) {
+	public Key(Relation relation, Attribute[] attributes) {
+		
+		List<String> attrNames = Arrays.stream(attributes)
+				.map(attr -> attr.getName())
+				.collect(Collectors.toList());
 		
 		if (!Arrays.stream(relation.getAttributes())
-				.anyMatch(attr -> attr.getName() == attribute.getName()))
-			throw new IllegalArgumentException("Attribute name not found");
+				.map(attr -> attr.getName())
+				.collect(Collectors.toList()).containsAll(attrNames))
+			throw new IllegalArgumentException("One or more attribute names not found");
 
 		this.relation = relation;
-		this.attribute = attribute;
+		this.attributes = attributes;
 	}
 
 	public Relation getRelation() {
 		return relation;
 	}
 
-	public Attribute getAttribute() {
-		return attribute;
+	public Attribute[] getAttributes() {
+		return attributes;
 	}
 }

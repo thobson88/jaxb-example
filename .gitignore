@@ -2,3 +2,4 @@ bin/
 .settings/
 
 /target/
+test/io/jaxb/adapted/test/AdaptedSchemaTest_DO_NOT_VERSION_CONTROL.java
